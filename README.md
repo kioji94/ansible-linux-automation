@@ -129,18 +129,6 @@ Why no `--check` step in CI: on a fresh runner, check mode skips the nginx insta
 - **Tags** let you apply one concern at a time, useful when debugging.
 - **Role-prefixed variables** (`updates_*`) satisfy `ansible-lint` and avoid collisions.
 
-## Push to GitHub
-
-```bash
-cd ansible-linux-automation
-git init -b main
-git add .
-git commit -m "feat: automate Linux configuration with Ansible roles and CI"
-git remote add origin git@github.com:<your-username>/ansible-linux-automation.git
-git push -u origin main
-```
-
-Then open the **Actions** tab to watch the pipeline run, and replace `<your-username>` in the badge at the top of this README.
 
 ## Ideas to extend
 
