@@ -1,0 +1,17 @@
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: "{{ updates_cache_valid_time }}"
+
+- name: Install common packages
+  ansible.builtin.apt:
+    name: "{{ common_packages }}"
+    state: present
+
+- name: Remove unwanted packages
+  ansible.builtin.apt:
+    name: "{{ unwanted_packages }}"
+    state: absent
+    purge: true
+  when: unwanted_packages | length > 0

@@ -1,0 +1,49 @@
+---
+# Post-run assertions: confirms the system really is in the desired state.
+- name: Verify configuration
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Check common packages are installed
+      ansible.builtin.command: "dpkg -s {{ item }}"
+      loop: "{{ common_packages }}"
+      changed_when: false
+
+    - name: Check users exist
+      ansible.builtin.command: "id {{ item.name }}"
+      loop: "{{ managed_users }}"
+      loop_control:
+        label: "{{ item.name }}"
+      changed_when: false
+
+    - name: Check sudoers file for sudo users
+      ansible.builtin.stat:
+        path: "/etc/sudoers.d/{{ item.name }}"
+      loop: "{{ managed_users | selectattr('sudo') | list }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: sudoers_stat
+
+    - name: Assert sudoers files exist with correct mode
+      ansible.builtin.assert:
+        that:
+          - item.stat.exists
+          - item.stat.mode == '0440'
+      loop: "{{ sudoers_stat.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Assert services are running and enabled
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.services[item.name + '.service'].state == 'running'
+          - ansible_facts.services[item.name + '.service'].status == 'enabled'
+        fail_msg: "{{ item.name }} is not running/enabled"
+      loop: "{{ managed_services }}"
+      loop_control:
+        label: "{{ item.name }}"

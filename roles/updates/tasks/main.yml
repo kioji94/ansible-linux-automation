@@ -1,0 +1,33 @@
+---
+- name: Refresh apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: "{{ updates_cache_valid_time }}"
+  when: updates_refresh_cache
+
+- name: Upgrade all packages (opt-in with -e system_upgrade=true)
+  ansible.builtin.apt:
+    upgrade: dist
+  when: system_upgrade | bool
+
+- name: Remove unused dependencies
+  ansible.builtin.apt:
+    autoremove: true
+  when: updates_autoremove | bool
+
+- name: Check whether a reboot is required
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: updates_reboot_required_file
+
+- name: Report reboot status
+  ansible.builtin.debug:
+    msg: "Reboot required: {{ updates_reboot_required_file.stat.exists }}"
+
+- name: Reboot if required and allowed
+  ansible.builtin.reboot:
+    msg: "Reboot initiated by Ansible after updates"
+    reboot_timeout: 600
+  when:
+    - updates_reboot_required_file.stat.exists
+    - updates_allow_reboot | bool

@@ -1,0 +1,18 @@
+---
+- name: Install service packages
+  ansible.builtin.apt:
+    name: "{{ item.package }}"
+    state: present
+    cache_valid_time: "{{ updates_cache_valid_time }}"
+  loop: "{{ managed_services }}"
+  loop_control:
+    label: "{{ item.package }}"
+
+- name: Manage services (enable at boot and set running state)
+  ansible.builtin.service:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    enabled: "{{ item.enabled }}"
+  loop: "{{ managed_services }}"
+  loop_control:
+    label: "{{ item.name }}"

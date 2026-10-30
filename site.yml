@@ -1,0 +1,26 @@
+---
+# Master playbook: runs every role. Use tags to run a single area, e.g.
+#   ansible-playbook site.yml --tags users
+- name: Automate Linux configuration
+  hosts: all
+  become: true
+  gather_facts: true
+
+  pre_tasks:
+    - name: Assert a supported OS family
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['os_family'] == 'Debian'
+        fail_msg: "This project targets Debian/Ubuntu hosts."
+        success_msg: "Supported OS: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+      tags: always
+
+  roles:
+    - role: updates
+      tags: [updates]
+    - role: packages
+      tags: [packages]
+    - role: users
+      tags: [users]
+    - role: services
+      tags: [services]

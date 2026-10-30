@@ -1,0 +1,23 @@
+---
+extends: default
+
+rules:
+  line-length:
+    max: 140
+    level: warning
+  truthy:
+    allowed-values: ["true", "false", "on"]
+    check-keys: false
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: disable
+  document-start: enable
+  braces:
+    max-spaces-inside: 1
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
+
+ignore: |
+  .git/
+  .github/workflows/

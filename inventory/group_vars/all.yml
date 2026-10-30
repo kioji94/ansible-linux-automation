@@ -1,0 +1,58 @@
+---
+# ---------- Packages ----------
+common_packages:
+  - curl
+  - wget
+  - git
+  - vim
+  - htop
+  - net-tools
+  - unzip
+  - tree
+  - jq
+
+# Packages to remove (empty by default)
+unwanted_packages: []
+
+# ---------- Users ----------
+managed_groups:
+  - devops
+  - developers
+
+managed_users:
+  - name: deploy
+    comment: "Deployment user"
+    shell: /bin/bash
+    groups: [devops]
+    sudo: true            # passwordless sudo via /etc/sudoers.d/
+    ssh_key: ""           # paste a public key here to authorize it
+  - name: devuser
+    comment: "Developer user"
+    shell: /bin/bash
+    groups: [developers]
+    sudo: false
+    ssh_key: ""
+
+# Users to remove (empty by default)
+removed_users: []
+
+# ---------- Services ----------
+managed_services:
+  - name: nginx
+    package: nginx
+    state: started
+    enabled: true
+  - name: cron
+    package: cron
+    state: started
+    enabled: true
+
+# ---------- System updates ----------
+updates_refresh_cache: true
+updates_cache_valid_time: 3600
+# Full upgrade is OFF by default so a normal run stays fast and idempotent.
+# Enable with:  -e system_upgrade=true
+system_upgrade: false
+updates_autoremove: false
+# Reboot only if the OS requests it AND this is true
+updates_allow_reboot: false

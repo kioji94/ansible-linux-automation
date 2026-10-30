@@ -1,0 +1,10 @@
+*.retry
+*.log
+.ansible/
+__pycache__/
+.venv/
+venv/
+.vscode/
+.idea/
+vault_pass*
+*.vault
